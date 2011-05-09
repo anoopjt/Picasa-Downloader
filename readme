@@ -1,0 +1,21 @@
+#Program Name: Picasa Downloader
+#Author: Anoop Jacob Thomas<anoopjt@gmail.com>
+#Email: anoopjt@gmail.com
+#Web: http://anoop.caremedia.org
+#License: GPLv3 or later
+
+This little python script will download the photographs from the
+picasa web album. It uses the rss feed information and downloads the
+photograph. It doesn't require login or authentication. The user may
+enter either the album url or the album feed path.
+
+The script will ask the user to enter the album url, just copy and
+paste it from the web-browser. Use CTRL+SHIFT+V to paste in case of
+gnome-terminal. And once that is entered it will ask you to enter the
+name of the directory/folder to which the images are to be
+downloaded. Note that a new directory of the name you provide will be
+created in the current working directory.
+
+I don't wish to install Picasa application on my GNU/Linux box and
+wanted a way to download all the images listed in an album rather than
+downloading it one by one. Hence I thought of this simple script.
