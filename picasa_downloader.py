@@ -39,16 +39,3 @@ for each in tags:
         output.write(img)
         output.close()
 
-# Obsolete code
-#pics = []
-#for l in y.split():
-#    if l.startswith('url='):
-#        pics.append(l.split("'")[1])
-# pics_set = set(pics)
-# for each in pics_set:
-#     img = urlopen(each).read()
-#     fname = basename(urlsplit(each)[2])
-#     output = open(fname,'wb')
-#     output.write(img)
-#     output.close()
-#     raw_input('Press enter to continue')
