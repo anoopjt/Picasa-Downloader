@@ -4,7 +4,7 @@
 #License: GPLv3 or later
 
 from urllib2 import urlopen
-from os.path import basename, join
+from os.path import basename, join, exists
 from os import mkdir
 from urlparse import urlsplit
 from BeautifulSoup import BeautifulStoneSoup
@@ -30,35 +30,39 @@ class ProgressBar(object):
         else:
             sys.stdout.write('\n')
 
-feedurl = False
-url = raw_input('Enter the Picasa web album/feed url : ')
-# Code for getting address of picasa web
-if urlsplit(url).path.startswith('/data/feed/'): #if the link given is a feed - picasaweb
-    feedurl = True
-    #print "Path is a feed path"
-elif urlsplit(url).netloc == "picasaweb.google.com":
-    y = urlopen(url).read()
-    soup = BeautifulStoneSoup(y,selfClosingTags=['meta','link','base'])
-    for link in soup.findAll('link'):
-        if link.has_key('rel'):
-            if link['rel']=="alternate":
-                url = link['href']
-                feedurl = True
-                #print "Feed path found", url
-                break
-name_album = raw_input('Enter name of Album : ')
-mkdir(name_album)
-x = urlopen(url)
-y = x.read()
-tags = BeautifulStoneSoup(y).findAll('media:content')
-print len(tags), "pictures found!"
-progress_bar = ProgressBar(len(tags))
-for i, each in enumerate(tags):
-    if each.has_key('url'):
-        img = urlopen(each['url']).read()
-        fname = join(name_album,basename(urlsplit(each['url'])[2]))
-        output = open(fname,'wb')
-        output.write(img)
-        output.close()
-        progress_bar.update(i)
+def get_feed_url(url):
+    # Code for getting address of picasa web
+    if urlsplit(url).path.startswith('/data/feed/'):
+        #if the link given is a feed - picasaweb
+        return url
+    elif urlsplit(url).netloc == "picasaweb.google.com":
+        y = urlopen(url).read()
+        soup = BeautifulStoneSoup(y,selfClosingTags=['meta','link','base'])
+        for link in soup.findAll('link'):
+            if link.has_key('rel'):
+                if link['rel']=="alternate":
+                    url = link['href']
+                    return url
 
+def download_photos(url, location):
+    if not exists(location):
+        mkdir(location)
+    feed_content = urlopen(url).read()
+    tags = BeautifulStoneSoup(feed_content).findAll('media:content')
+    count = len(tags)
+    print "%d pictures found!" % count
+    progress_bar = ProgressBar(count)
+    for i, each in enumerate(tags):
+        if each.has_key('url'):
+            img = urlopen(each['url']).read()
+            fname = join(location, basename(urlsplit(each['url'])[2]))
+            output = open(fname,'wb')
+            output.write(img)
+            output.close()
+            progress_bar.update(i)
+
+if __name__ == '__main__':
+    url = raw_input('Enter the Picasa web album/feed url : ')
+    url = get_feed_url(url)
+    name_album = raw_input('Enter name of Album : ')
+    download_photos(url, name_album)
